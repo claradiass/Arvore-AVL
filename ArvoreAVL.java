@@ -7,29 +7,25 @@ public class ArvoreAVL {
 
     public void removerNo(int dado){
         No noEncontrado = buscaRecursiva(getRaiz(), dado);
+
         if( noEncontrado != null){
             if(noEncontrado.getDireita() == null && noEncontrado.getEsquerda() == null){
-                remocaoNoFolha(noEncontrado);
+                remocaoNoFolha(noEncontrado); // nó sem filhos
 
             } else if (noEncontrado.getDireita() == null || noEncontrado.getEsquerda() == null){
-                remocaoNoUmFilho(noEncontrado);
+                remocaoNoUmFilho(noEncontrado); // nó com apenas um filho
 
-            } else {
+            } else { // nó com dois filhos (procura o seu sucessor)
+
                 No sucessor = encontrarSucessor(noEncontrado);
                 noEncontrado.setDado(sucessor.getDado()); // substitue pelo dado do sucessor
 
                 // remover o sucessor, pois seu dado subu para o No que queria remover
                 if(sucessor.getDireita() != null){
-                    remocaoNoUmFilho(sucessor);
+                    remocaoNoUmFilho(sucessor); // Se o sucessor tem filho à direita, remove o nó com um filho
                 } else {
-                    remocaoNoFolha(sucessor);
+                    remocaoNoFolha(sucessor); // Se o sucessor é folha, remove o nó folha
                 }
-
-
-//                noEncontrado.getPai().setEsquerda(noEncontrado.getDireita());
-//                noEncontrado.getEsquerda().setPai(noEncontrado.getDireita());
-//                noEncontrado.getDireita().setEsquerda(noEncontrado.getEsquerda());
-//                noEncontrado.getDireita().setPai(noEncontrado.getPai());
             }
             ajustarArvore(getRaiz());
             return;
@@ -47,28 +43,31 @@ public class ArvoreAVL {
     }
 
     public void remocaoNoFolha(No no){
+        // Verifica se o nó folha é filho esquerdo do pai, caso não for significa que ele é filho a direita
         if (no == no.getPai().getEsquerda()) {
             no.getPai().setEsquerda(null);
         } else {
             no.getPai().setDireita(null);
         }
-        if (no == raiz) {
-            raiz = null;
-        }
     }
 
     public void remocaoNoUmFilho(No no){
+        // verifica qual lado que o filho está
         No filho = (no.getEsquerda() != null) ? no.getEsquerda() : no.getDireita();
 
+        // se o nó for a raiz, o filho dele se tornará raiz
         if (no == raiz) {
             raiz = filho;
+
         } else {
+            // Verifica se o nó folha é filho esquerdo do pai, caso não for significa que ele é filho a direita
             if (no == no.getPai().getEsquerda()) {
                 no.getPai().setEsquerda(filho);
             } else {
                 no.getPai().setDireita(filho);
             }
         }
+        // Ajusta a referência ao pai
         if (filho != null) {
             filho.setPai(no.getPai());
         }
