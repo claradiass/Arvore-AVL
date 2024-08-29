@@ -15,11 +15,21 @@ public class ArvoreAVL {
                 remocaoNoUmFilho(noEncontrado);
 
             } else {
+                No sucessor = encontrarSucessor(noEncontrado);
+                noEncontrado.setDado(sucessor.getDado()); // substitue pelo dado do sucessor
 
-                noEncontrado.getPai().setEsquerda(noEncontrado.getDireita());
-                noEncontrado.getEsquerda().setPai(noEncontrado.getDireita());
-                noEncontrado.getDireita().setEsquerda(noEncontrado.getEsquerda());
-                noEncontrado.getDireita().setPai(noEncontrado.getPai());
+                // remover o sucessor, pois seu dado subu para o No que queria remover
+                if(sucessor.getDireita() != null){
+                    remocaoNoUmFilho(sucessor);
+                } else {
+                    remocaoNoFolha(sucessor);
+                }
+
+
+//                noEncontrado.getPai().setEsquerda(noEncontrado.getDireita());
+//                noEncontrado.getEsquerda().setPai(noEncontrado.getDireita());
+//                noEncontrado.getDireita().setEsquerda(noEncontrado.getEsquerda());
+//                noEncontrado.getDireita().setPai(noEncontrado.getPai());
             }
             ajustarArvore(getRaiz());
             return;
@@ -27,20 +37,41 @@ public class ArvoreAVL {
         System.out.println("No não encontrado");
     }
 
-    public void remocaoNoFolha(No no){
-        if(no.getDado() > no.getPai().getDado()){
-            no.getPai().setDireita(null);
-            return;
+
+    public No encontrarSucessor(No no){
+        No atual = no.getDireita();
+        while (atual.getEsquerda() != null) {
+            atual = atual.getEsquerda();
         }
-          no.getPai().setEsquerda(null);
+        return atual;
+    }
+
+    public void remocaoNoFolha(No no){
+        if (no == no.getPai().getEsquerda()) {
+            no.getPai().setEsquerda(null);
+        } else {
+            no.getPai().setDireita(null);
+        }
+        if (no == raiz) {
+            raiz = null;
+        }
     }
 
     public void remocaoNoUmFilho(No no){
-        if (no.getDireita() == null){
-            no.getPai().setEsquerda(no.getEsquerda());
-            return;
+        No filho = (no.getEsquerda() != null) ? no.getEsquerda() : no.getDireita();
+
+        if (no == raiz) {
+            raiz = filho;
+        } else {
+            if (no == no.getPai().getEsquerda()) {
+                no.getPai().setEsquerda(filho);
+            } else {
+                no.getPai().setDireita(filho);
+            }
         }
-        no.getPai().setEsquerda(no.getDireita());
+        if (filho != null) {
+            filho.setPai(no.getPai());
+        }
     }
 
     public No buscaRecursiva(No no, int valor){ //Criar método de busca que recebe um valor e diz se o valor está ou não na árvore.
